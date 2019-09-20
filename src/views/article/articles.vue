@@ -100,10 +100,7 @@
                     <el-button type="text" size="small">编辑</el-button>
                 </template>
             </el-table-column>
-
-
         </el-table>
-
         <el-pagination   style="text-align: right;margin-top: 20px"
                 background
                 layout="prev, pager, next"
@@ -112,11 +109,6 @@
                 :total="total">
         </el-pagination>
     </div>
-
-
-
-
-
 
 </template>
 
@@ -147,11 +139,7 @@
         created  () {
             this.initSearchData();
             this.getArticleList(this.$route.query);
-            console.log(this.$route.fullPath)
-
         },
-
-
         watch: {
             $route: {
                 handler(val, oldVal){
@@ -170,7 +158,6 @@
             },
             changePage : function(page) {
                 let params = JSON.parse(JSON.stringify(this.$route.query));
-                console.log(params)
                 params.page = page;
                 this.$router.push({
                     path:this.$route.path,
