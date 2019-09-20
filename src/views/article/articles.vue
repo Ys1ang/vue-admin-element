@@ -1,6 +1,13 @@
 <template>
+
     <div>
+
+
+
         <el-form :inline="true" :model="formInline" class="form-search">
+
+
+            <p>{{formInline.date}}</p>
             <el-form-item label="标题">
                 <el-input v-model="formInline.title" placeholder="请输入标题"></el-input>
             </el-form-item>
@@ -32,6 +39,7 @@
             <div style="text-align: right">
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">查询</el-button>
+                    <el-button type="info" @click="reset">重置</el-button>
                 </el-form-item>
             </div>
         </el-form>
@@ -50,6 +58,9 @@
                     prop="img"
                     label="图片"
                     width="200">
+                <template slot-scope="scope">
+                    <img :src="scope.row.img" width="150" class="head_pic"/>
+                </template>
             </el-table-column>
             <el-table-column
                     prop="title"
@@ -92,6 +103,14 @@
 
 
         </el-table>
+
+        <el-pagination   style="text-align: right;margin-top: 20px"
+                background
+                layout="prev, pager, next"
+                @current-change ='changePage'
+                :current-page="page"
+                :total="total">
+        </el-pagination>
     </div>
 
 
@@ -113,18 +132,22 @@
         data() {
             return {
                 res:[],
+                total:0,
+                page:1,
                 params:{},
                 formInline: {
                     title: '',
                     status: '',
                     type: '',
-                    date:'',
+                    date:[],
 
         }
             }
         },
         created  () {
+            this.initSearchData();
             this.getArticleList(this.$route.query);
+            console.log(this.$route.fullPath)
 
         },
 
@@ -139,16 +162,32 @@
         },
         methods: {
             filterType :  function (val) {
-
                 return  bannerType[val['type']];
             },
 
             filterStatus :  function (val) {
-
-            
-
-
                 return  bannerStatus[val['status']];
+            },
+            changePage : function(page) {
+                let params = JSON.parse(JSON.stringify(this.$route.query));
+                console.log(params)
+                params.page = page;
+                this.$router.push({
+                    path:this.$route.path,
+                    query:params
+                })
+            },
+
+
+            initSearchData  () {
+                this.formInline=this.$route.query;
+                let startAt = !this.$route.query.startAt?'':  new Date( Number(this.$route.query.startAt));
+                let endAt = !this.$route.query.endAt?'':  new Date( Number(this.$route.query.endAt));
+                // this.formInline.date='';
+                if((startAt&& startAt)){
+                    this.formInline.date=[startAt ,endAt];
+                }
+
             },
 
 
@@ -157,6 +196,8 @@
                 try {
                      let res =  await getArticleLists(query);
                      this.res = res.data.articleList;
+                     this.total = res.data.total;
+                     this.page = Math.ceil(res.data.size/res.data.total);
                     hideLoading (this);
                 } catch (e) {
                     hideLoading (this);
@@ -167,10 +208,21 @@
                 let params = JSON.parse(JSON.stringify(this.formInline))
                 params.startAt = params.date ? new Date(params.date[0]).getTime() :'';
                 params.endAt =  params.date ? new Date(params.date[1]).getTime():'';
+                params.page=1;
                 delete  params.date;
                 this.$router.push({
-                    path:'/articles',
+                    path:this.$route.path,
                     query:params
+                })
+            },
+            reset(){
+                for (let key in this.formInline) {
+                    this.formInline[key]=''
+                };
+                this.page=1;
+                this.$router.push({
+                    path:this.$route.path,
+                    query:''
                 })
             }
         }

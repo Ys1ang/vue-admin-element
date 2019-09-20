@@ -3,7 +3,7 @@ export const  bannerType  =  {
     1:'找职位banner',
     2:'找职位banner',
     3:'行业大图',
-}
+};
 
 export const  bannerStatus  =  {
     1:'下架',
