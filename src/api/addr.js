@@ -8,3 +8,11 @@ export const  LoginIn = (params) =>{
 export const  getArticleLists = (params) =>{
     return request('get','/a/article/search',params)
 };
+
+
+
+//新增article
+
+export const  addArticle = (params) =>{
+    return request('post','/a/u/article',params)
+};

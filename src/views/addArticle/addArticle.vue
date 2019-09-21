@@ -1,5 +1,6 @@
 <template>
     <div>
+        {{ruleForm.img}}
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="form-search">
             <el-form-item label="标题名称" prop="title">
                 <el-input v-model="ruleForm.title"></el-input>
@@ -20,7 +21,7 @@
                 <el-upload
                         action="/a/u/img/img"
                         list-type="picture-card"
-                        v-model="ruleForm.img"
+                        :limit="1"
                         :on-success="handleAvatarSuccess"
                         :before-upload="beforeAvatarUpload"
                         :on-preview="handlePictureCardPreview"
@@ -33,8 +34,8 @@
             </el-form-item>
 
             <el-form-item>
-                <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
-                <el-button @click="resetForm('ruleForm')">重置</el-button>
+                <el-button type="primary" @click="submitForm('ruleForm')">新增</el-button>
+                <el-button @click="back()">取消</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -44,7 +45,7 @@
 <script>
 
     import  {showLoading,hideLoading} from '../../utils/commonUtil'
-    import {getArticleLists}  from '../../api/addr'
+    import {addArticle, getArticleLists} from '../../api/addr'
     import {bannerType} from  '../../const/const.js'
     import {getRulesListByAddArticle,Form} from "./addArticle";
 
@@ -64,18 +65,39 @@
             this.bannerTypeList = bannerType;
         },
         methods: {
+
+            async addArticle(params) {
+                showLoading (this);
+                try {
+                    params.status =1;
+                    let res =  await  addArticle(params);
+                    this.$message.success(res.message);
+                    this.back();
+                    hideLoading (this);
+                } catch (e) {
+                    hideLoading (this);
+                }
+            },
+
+
+
+
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
+                    console.log(valid)
                     if (valid) {
-                        alert('submit!');
+
+                        this.addArticle(this.ruleForm)
                     } else {
                         console.log('error submit!!');
                         return false;
                     }
                 });
             },
-            resetForm(formName) {
-                this.$refs[formName].resetFields();
+            back() {
+                this.$router.push({
+                    path:'/articles'
+                })
             },
             handleAvatarSuccess(res, file) {
                 console.log(res)
@@ -83,9 +105,8 @@
                 this.ruleForm.img = res.data.url;
             },
             beforeAvatarUpload(file) {
+                console.log(1)
 
-
-                console.log(file)
                 const isJPG = file.type === 'image/jpeg';
                 const isPNG = file.type === 'image/png';
                 const isLt2M = file.size / 1024 / 1024 < 2;
@@ -100,7 +121,7 @@
             },
 
             handleRemove(file, fileList) {
-                console.log(file, fileList);
+                    this.ruleForm.img='';
             },
             handlePictureCardPreview(file) {
                 this.dialogImageUrl = file.url;
