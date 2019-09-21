@@ -3,11 +3,7 @@
     <div>
 
 
-
         <el-form :inline="true" :model="formInline" class="form-search">
-
-
-            <p>{{formInline.date}}</p>
             <el-form-item label="标题">
                 <el-input v-model="formInline.title" placeholder="请输入标题"></el-input>
             </el-form-item>
@@ -43,10 +39,19 @@
                 </el-form-item>
             </div>
         </el-form>
+        <div style="text-align: right;padding:10px 20px">
+
+
+            <router-link to="/addArticle" tag="el-button" type="primary" class="el-button--primary">
+                新增
+
+            </router-link>
+
+        </div>
 
         <el-table
                 :data="res"
-                style="width: 100%;text-align: center ; border: 1px solid #efefef;border-radius: 3px;margin-top: 20px"
+                style="width: 100%;text-align: center ; border: 1px solid #efefef;border-radius: 3px"
                 max-height="600px">
             <el-table-column
                     fixed
@@ -71,17 +76,22 @@
                     prop="type"
                     label="类型"
                     :formatter = 'filterType'
-                    width="60">
+                    width="100">
             </el-table-column>
             <el-table-column
                     prop="createAt"
                     label="创建时间"
-                    width="300">
+                    :formatter = 'timestampToTime'
+                    width="200">
+
+
+
             </el-table-column>
             <el-table-column
                     prop="updateAt"
                     label="修改时间"
-                    width="120">
+                    :formatter = 'timestampToTime'
+                    width="200">
             </el-table-column>
 
             <el-table-column
@@ -114,7 +124,7 @@
 
 <script>
 
-    import  {showLoading,hideLoading} from '../../utils/commonUtil'
+    import  {showLoading,hideLoading,timestampToTime} from '../../utils/commonUtil'
     import {getArticleLists}  from '../../api/addr'
     import {bannerType,bannerStatus} from  '../../const/const.js'
 
@@ -149,12 +159,15 @@
             }
         },
         methods: {
-            filterType :  function (val) {
-                return  bannerType[val['type']];
+            timestampToTime : function (val,row) {
+                 return timestampToTime(val[row.property])
+            },
+            filterType :  function (val,row) {
+                return  bannerType[val[row.property]];
             },
 
-            filterStatus :  function (val) {
-                return  bannerStatus[val['status']];
+            filterStatus :  function (val,row) {
+                return  bannerStatus[val[row.property]];
             },
             changePage : function(page) {
                 let params = JSON.parse(JSON.stringify(this.$route.query));
