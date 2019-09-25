@@ -44,7 +44,6 @@
 
             <router-link to="/addArticle" tag="el-button" type="primary" class="el-button--primary">
                 新增
-
             </router-link>
 
         </div>
@@ -106,7 +105,9 @@
                     label="操作"
                     width="200">
                 <template slot-scope="scope">
-                    <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+                    <router-link :to="{name:'Article',params:{id:scope.row.id }}" tag="el-button" type="primary" class="el-button el-button--text el-button--small">
+                        查看
+                    </router-link>
                     <el-button type="text" size="small">编辑</el-button>
                 </template>
             </el-table-column>
