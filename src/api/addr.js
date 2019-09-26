@@ -19,3 +19,10 @@ export const  addArticle = (params) =>{
 export const  getArticleById = (id) =>{
     return request('get','/a/article/'+id)
 };
+
+export const  updateArticleStatus = (params) =>{
+    return request('put','/a/u/article/status',params)
+};
+export const  updateArticle = (id,params) =>{
+    return request('put','/a/u/article/'+id,params)
+};

@@ -1,7 +1,7 @@
 <template>
     <div>
 
-        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="form-search" disabled>
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="form-search" >
             <el-form-item label="标题名称" prop="title">
                 <el-input v-model="ruleForm.title"></el-input>
             </el-form-item>

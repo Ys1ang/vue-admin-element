@@ -51,4 +51,7 @@ export default function request(method, url, data) {
             params: data
         })
     }
+    else if (method === 'put') {
+        return axios.put(url,qs.stringify(data,{arrayFormat:'repeat'}))
+    }
 }

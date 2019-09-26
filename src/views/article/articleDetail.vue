@@ -3,22 +3,22 @@
 
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="form-search">
             <el-form-item label="标题名称" prop="title">
-                <el-input v-model="ruleForm.title" :disabled="isEdit"></el-input>
+                <el-input v-model="ruleForm.title" :disabled="!isEdit"></el-input>
             </el-form-item>
             <el-form-item label="类型" prop="type">
-                <el-select v-model="ruleForm.type" placeholder="请选择banner类型"    value="" :disabled="isEdit">
+                <el-select v-model="ruleForm.type" placeholder="请选择banner类型"    value="" :disabled="!isEdit">
                     <el-option v-for="(item,index) in bannerTypeList" :key="index" :label="item" :value="index"></el-option>
                 </el-select>
             </el-form-item>
 
             <el-form-item label="说明" prop="content">
-                <el-input v-model="ruleForm.content" :disabled="isEdit"></el-input>
+                <el-input v-model="ruleForm.content" :disabled="!isEdit"></el-input>
             </el-form-item>
             <el-form-item label="跳转链接" prop="url">
-                <el-input v-model="ruleForm.url" :disabled="isEdit"></el-input>
+                <el-input v-model="ruleForm.url" :disabled="!isEdit"></el-input>
             </el-form-item>
             <el-form-item label="配图" prop="img" >
-                <el-upload :disabled="isEdit"
+                <el-upload :disabled="!isEdit"
                         action="/a/u/img/img"
                         list-type="picture-card"
                         :limit="1"
@@ -37,9 +37,12 @@
             </el-form-item>
 
             <el-form-item>
-                <el-button type="primary" @click="changeArticle(isEdit)">{{isEdit?'编辑':'查看'}}</el-button>
+                <el-button type="primary"  v-if="!isEdit"  :disabled="res.status ==2"    @click="changeArticle(isEdit)">{{!isEdit?'编辑':'查看'}}</el-button>
+
+                <el-button type="primary"    v-if="isEdit"    @click="saveArticle()">保存</el-button>
+
+
                 <el-button @click="back()">取消</el-button>
-                {{this.isEdit}}
 
             </el-form-item>
         </el-form>
@@ -49,7 +52,7 @@
 <script>
 
     import  {showLoading,hideLoading} from '../../utils/commonUtil'
-    import {getArticleById} from '../../api/addr'
+    import {getArticleById,updateArticle} from '../../api/addr'
     import {bannerType} from  '../../const/const.js'
     import {getRulesListByAddArticle,Form} from "../addArticle/addArticle";
 
@@ -78,7 +81,26 @@
 
         },
         methods: {
-
+            async  saveArticle () {
+                showLoading (this);
+                try {
+                    let params = JSON.stringify(JSON.parse(this.ruleForm));
+                    console.log(params)
+                    for (let key in this.bannerTypeList ){
+                        if(this.bannerTypeList[key]=params.type){
+                            params.type = key;
+                        }
+                    }
+                    params.status=1;
+                    let res =  await  updateArticle(this.res.id,params);
+                    this.$message.success(res.message)
+                    this.back();
+                    console.log(this.res)
+                    hideLoading (this);
+                } catch (e) {
+                    hideLoading (this);
+                }
+            },
 
             async getArticleById(id) {
                 showLoading (this);
@@ -98,7 +120,7 @@
                     })
 
                     if(this.res.status===2){
-                        this.isEdit =true;
+                        this.isEdit =false;
                     }
 
                     console.log(this.res)
@@ -113,17 +135,11 @@
 
 
             changeArticle(status) {
-                this.$refs[formName].validate((valid) => {
-                    console.log(valid)
-                    if (valid) {
-                        console.log(this.ruleForm)
-                        // this.addArticle(this.ruleForm)
-                    } else {
-                        console.log('error submit!!');
-                        return false;
-                    }
-                });
+                 this.isEdit =status==true?false:true
+
             },
+
+
             back() {
                 this.$router.push({
                     path:'/articles'

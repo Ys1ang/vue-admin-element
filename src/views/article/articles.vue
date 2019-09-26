@@ -105,9 +105,14 @@
                     label="操作"
                     width="200">
                 <template slot-scope="scope">
+
+                    <el-button @click="update(scope.row)"  :type="scope.row.status==1?'success':'danger'" size="small">{{scope.row.status==1?'上架':'下架'}}</el-button>
                     <router-link :to="{name:'Article',params:{id:scope.row.id }}" tag="el-button" type="primary" class="el-button el-button--text el-button--small">
                         查看
                     </router-link>
+
+
+
                     <el-button type="text" size="small">编辑</el-button>
                 </template>
             </el-table-column>
@@ -126,7 +131,7 @@
 <script>
 
     import  {showLoading,hideLoading,timestampToTime} from '../../utils/commonUtil'
-    import {getArticleLists}  from '../../api/addr'
+    import {updateArticleStatus,getArticleLists}  from '../../api/addr'
     import {bannerType,bannerStatus} from  '../../const/const.js'
 
 
@@ -160,6 +165,21 @@
             }
         },
         methods: {
+
+
+            update : function (updateObj) {
+                let updateMsg= updateObj.status==1?'确定上架该项吗？' : '确定下架该项吗？';
+                this.$confirm(updateMsg, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.updateArticleBystatus ({id:updateObj.id,status:updateObj.status==1?2:1})
+                })
+            },
+
+
+
             timestampToTime : function (val,row) {
                  return timestampToTime(val[row.property])
             },
@@ -192,6 +212,20 @@
             },
 
 
+
+            async updateArticleBystatus(params) {
+                showLoading (this);
+
+                try {
+                    let res = await updateArticleStatus(params);
+                   this.$message.success(res.message);
+                   this.onSubmit()
+                    hideLoading (this);
+                } catch (e) {
+                    hideLoading (this);
+                }
+            },
+
             async getArticleList(query) {
                 showLoading (this);
                 try {
@@ -209,8 +243,11 @@
                 let params = JSON.parse(JSON.stringify(this.formInline))
                 params.startAt = params.date ? new Date(params.date[0]).getTime() :'';
                 params.endAt =  params.date ? new Date(params.date[1]).getTime():'';
+                params.t= new Date().getTime();
                 params.page=1;
                 delete  params.date;
+
+                console.log(params)
                 this.$router.push({
                     path:this.$route.path,
                     query:params
