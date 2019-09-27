@@ -73,22 +73,21 @@
 
         created () {
             this.bannerTypeList = bannerType;
-
-            console.log(this.$route.params.id)
-
              this.getArticleById (this.$route.params.id)
-
-
         },
         methods: {
             async  saveArticle () {
                 showLoading (this);
                 try {
-                    let params = JSON.stringify(JSON.parse(this.ruleForm));
+                    console.log(1)
+                    let params = JSON.parse(JSON.stringify(this.ruleForm));
                     console.log(params)
+                    params.author ='admin' ;
+                    params.id=this.res.id;
+                    params.createAt=this.res.createAt;
                     for (let key in this.bannerTypeList ){
                         if(this.bannerTypeList[key]=params.type){
-                            params.type = key;
+                            params.type = Number(key);
                         }
                     }
                     params.status=1;

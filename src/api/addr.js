@@ -26,3 +26,8 @@ export const  updateArticleStatus = (params) =>{
 export const  updateArticle = (id,params) =>{
     return request('put','/a/u/article/'+id,params)
 };
+
+export const  deleteArticle = (id) =>{
+    return request('delete','/a/u/article/'+id)
+};
+

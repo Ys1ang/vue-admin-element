@@ -103,17 +103,16 @@
             <el-table-column
                     fixed="right"
                     label="操作"
-                    width="200">
+                    width="240">
                 <template slot-scope="scope">
 
                     <el-button @click="update(scope.row)"  :type="scope.row.status==1?'success':'danger'" size="small">{{scope.row.status==1?'上架':'下架'}}</el-button>
                     <router-link :to="{name:'Article',params:{id:scope.row.id }}" tag="el-button" type="primary" class="el-button el-button--text el-button--small">
                         查看
                     </router-link>
-
-
-
                     <el-button type="text" size="small">编辑</el-button>
+                    <el-button @click="deleteArt(scope.row)"    :disabled="scope.row.status==2"  type="danger" size="small">删除</el-button>
+
                 </template>
             </el-table-column>
         </el-table>
@@ -131,7 +130,7 @@
 <script>
 
     import  {showLoading,hideLoading,timestampToTime} from '../../utils/commonUtil'
-    import {updateArticleStatus,getArticleLists}  from '../../api/addr'
+    import {updateArticleStatus,getArticleLists,deleteArticle}  from '../../api/addr'
     import {bannerType,bannerStatus} from  '../../const/const.js'
 
 
@@ -165,6 +164,21 @@
             }
         },
         methods: {
+
+            deleteArt : function (deleteObj) {
+
+
+                console.log(deleteObj)
+
+                let deleteMsg= '确定删除架该项吗？';
+                this.$confirm(deleteMsg, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.deleteArticle (deleteObj.id)
+                })
+            },
 
 
             update : function (updateObj) {
@@ -210,6 +224,22 @@
                 }
 
             },
+
+
+
+
+            async deleteArticle(params) {
+                showLoading (this);
+                try {
+                    let res = await deleteArticle(params);
+                    this.$message.success(res.message);
+                    this.onSubmit()
+                    hideLoading (this);
+                } catch (e) {
+                    hideLoading (this);
+                }
+            },
+
 
 
 
