@@ -1,10 +1,14 @@
 # vue-admin 
-2019年9月20日 第一次上传
+**Vue +Vue-route + VueX +elementUi + axios  实现。** 
+
+axios二次封装，配合async，简化请求，优化代码层次。
+VueX用于控制全局Loading页面。
+route用路由守卫做权限验证。
+
+
+_2019年9月20日 第一次上传_
 
 从svn导入至git
-
-
-
 
 2019年9月21日
 1.新增article 列表页
